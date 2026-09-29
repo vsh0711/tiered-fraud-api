@@ -1,0 +1,10 @@
+{
+  "name": "tiered-fraud-api",
+  "install": "pip install -r requirements.txt",
+  "terminals": [
+    {
+      "name": "api",
+      "command": "PYTHONPATH=. python -m uvicorn app.main:app --host 127.0.0.1 --port 8742 --reload"
+    }
+  ]
+}

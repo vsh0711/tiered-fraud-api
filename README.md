@@ -11,6 +11,8 @@ Built for portfolio demos comparing **baseline** (always run the full stack) vs 
 
 ## Quick start (local)
 
+**First time in Cursor on your Mac?** See Project Context `docs/local-ide-setup.md` (venv, interpreter, Run/Debug configs).
+
 ```bash
 cd /workspace
 uv sync                    # or: pip install -e .
