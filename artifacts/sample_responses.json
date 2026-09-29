@@ -1,0 +1,63 @@
+{
+  "optimized": {
+    "request_id": "sample-opt",
+    "routing_mode": "optimized",
+    "decision": "approve",
+    "fraud_probability": 0.103423,
+    "tiers_executed": [
+      {
+        "tier": "T0",
+        "score": 0.6729,
+        "latency_ms": 0.282,
+        "features_used": 6
+      },
+      {
+        "tier": "T1",
+        "score": 0.10342298866889031,
+        "latency_ms": 20.115,
+        "features_used": 4
+      }
+    ],
+    "cumulative_latency_ms": 20.397,
+    "deadline_ms": 100.0,
+    "early_exit": true,
+    "or_utility": 79.23500000000001,
+    "metadata": {
+      "routing": "knapsack_depth budget=95.0ms tiers=t0_rules,t1_fast,t2_full",
+      "early_exit_reason": "clearly_safe"
+    }
+  },
+  "baseline": {
+    "request_id": "sample-base",
+    "routing_mode": "baseline",
+    "decision": "approve",
+    "fraud_probability": 0.041025,
+    "tiers_executed": [
+      {
+        "tier": "T0",
+        "score": 0.6729,
+        "latency_ms": 0.236,
+        "features_used": 6
+      },
+      {
+        "tier": "T1",
+        "score": 0.10342298866889031,
+        "latency_ms": 8.506,
+        "features_used": 4
+      },
+      {
+        "tier": "T2",
+        "score": 0.04102493244902972,
+        "latency_ms": 30.592,
+        "features_used": 16
+      }
+    ],
+    "cumulative_latency_ms": 39.335,
+    "deadline_ms": 100.0,
+    "early_exit": false,
+    "or_utility": null,
+    "metadata": {
+      "routing": "baseline_always_t2"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+data/models/*.joblib
+!data/models/.gitkeep
+artifacts/*
+!artifacts/benchmark_results.json
+!artifacts/sample_responses.json
+.pytest_cache/
+.ruff_cache/
+*.egg-info/

@@ -1,0 +1,54 @@
+{
+  "n_requests_per_mode": 400,
+  "dataset_fraud_rate_pct": 2.0,
+  "baseline": {
+    "mode": "baseline",
+    "requests": 400,
+    "errors": 0,
+    "latency_ms": {
+      "p50": 13.768,
+      "p95": 17.19,
+      "p99": 26.379,
+      "mean": 14.368
+    },
+    "tier_stop_pct": {
+      "T2": 100.0
+    },
+    "decisions": {
+      "approve": 400
+    }
+  },
+  "optimized": {
+    "mode": "optimized",
+    "requests": 400,
+    "errors": 0,
+    "latency_ms": {
+      "p50": 7.494,
+      "p95": 8.477,
+      "p99": 9.71,
+      "mean": 7.501
+    },
+    "tier_stop_pct": {
+      "T1": 98.25,
+      "T0": 1.75
+    },
+    "decisions": {
+      "approve": 400
+    }
+  },
+  "notes": "Fraud capture @ fixed FPR computed offline in scripts/benchmark.py on held-out scores",
+  "offline_eval": {
+    "fraud_capture_at_5pct_fpr": {
+      "baseline": 0.2,
+      "optimized": 0.1
+    },
+    "simulated_latency_ms_mean": {
+      "baseline": 31.98,
+      "optimized": 8.284
+    },
+    "optimized_tier_stop_pct": {
+      "T1": 98.0,
+      "T0": 2.0
+    }
+  }
+}
