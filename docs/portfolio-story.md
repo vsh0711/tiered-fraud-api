@@ -62,6 +62,8 @@ Not a notebook demo. The portfolio artifact includes:
 
 ## Links
 
+- Live Ops Console: https://tiered-fraud-web.onrender.com  
+- Live API health: https://tiered-fraud-api.onrender.com/v1/health  
 - Architecture: [architecture.md](architecture.md)  
 - Deploy: [deploy-render.md](deploy-render.md)  
 - Repo: https://github.com/vsh0711/tiered-fraud-api  
