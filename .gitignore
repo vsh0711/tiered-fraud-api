@@ -7,7 +7,14 @@ data/models/*.joblib
 !data/models/.gitkeep
 artifacts/*
 !artifacts/benchmark_results.json
+!artifacts/capture_report.json
 !artifacts/sample_responses.json
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
+web/node_modules/
+web/.next/
+web/out/
+.DS_Store
+dist/
+build/

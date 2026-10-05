@@ -1,0 +1,60 @@
+{
+  "source": "uploaded_file",
+  "source_name": "holdout_upload.csv",
+  "n_samples": 80,
+  "fraud_rate_holdout": 0.1875,
+  "thresholds": {
+    "approve_threshold": 0.15,
+    "decline_threshold": 0.6015,
+    "cascade_safe_upper": 0.06,
+    "cascade_fraud_lower": 0.6815
+  },
+  "fraud_capture_at_5pct_fpr": {
+    "baseline": 0.3333,
+    "optimized": 0.4
+  },
+  "operational_flagging": {
+    "baseline": {
+      "tp": 9,
+      "fp": 10,
+      "fn": 6,
+      "tn": 55,
+      "precision": 0.4737,
+      "recall_fraud_capture": 0.6,
+      "fpr": 0.1538,
+      "flag_rate": 0.2375
+    },
+    "optimized": {
+      "tp": 9,
+      "fp": 12,
+      "fn": 6,
+      "tn": 53,
+      "precision": 0.4286,
+      "recall_fraud_capture": 0.6,
+      "fpr": 0.1846,
+      "flag_rate": 0.2625
+    }
+  },
+  "decision_mix_pct": {
+    "baseline": {
+      "approve": 76.25,
+      "review": 20.0,
+      "decline": 3.75
+    },
+    "optimized": {
+      "approve": 73.75,
+      "decline": 16.25,
+      "review": 10.0
+    }
+  },
+  "latency_ms_mean": {
+    "baseline": 30.684,
+    "optimized": 22.322,
+    "savings_pct": 27.25
+  },
+  "optimized_tier_stop_pct": {
+    "T2": 71.25,
+    "T0": 16.25,
+    "T1": 12.5
+  }
+}

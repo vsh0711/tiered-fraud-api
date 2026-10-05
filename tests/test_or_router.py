@@ -17,13 +17,13 @@ def test_plan_respects_budget():
 
 
 def test_cascade_safe_exit():
-    s = Settings(cascade_safe_upper=0.12)
+    s = Settings(cascade_safe_upper=0.08)
     stop, reason = cascade_should_stop(0.05, s)
     assert stop and reason == "clearly_safe"
 
 
 def test_decision_thresholds():
-    s = Settings(approve_threshold=0.35, decline_threshold=0.72)
+    s = Settings(approve_threshold=0.22, decline_threshold=0.55)
     assert decision_from_score(0.1, s).value == "approve"
-    assert decision_from_score(0.5, s).value == "review"
-    assert decision_from_score(0.9, s).value == "decline"
+    assert decision_from_score(0.35, s).value == "review"
+    assert decision_from_score(0.8, s).value == "decline"

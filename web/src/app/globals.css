@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #07111f;
+  --bg-elevated: #0d1b2e;
+  --panel: rgba(14, 28, 48, 0.88);
+  --line: rgba(120, 160, 200, 0.16);
+  --text: #e8f1ff;
+  --muted: #8aa0b8;
+  --accent: #2dd4bf;
+  --accent-2: #38bdf8;
+  --danger: #fb7185;
+  --warn: #fbbf24;
+  --ok: #34d399;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  color: var(--text);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(45, 212, 191, 0.12), transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, rgba(56, 189, 248, 0.1), transparent 50%),
+    linear-gradient(180deg, #050b14 0%, var(--bg) 40%, #081526 100%);
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+* {
+  border-color: var(--line);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+}
+
+.grid-fade {
+  background-image:
+    linear-gradient(rgba(120, 160, 200, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 160, 200, 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: rise 420ms ease-out both;
+}

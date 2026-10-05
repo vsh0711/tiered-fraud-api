@@ -1,0 +1,41 @@
+{
+  "n_requests_per_mode": 400,
+  "dataset_fraud_rate_pct": 2.0,
+  "baseline": {
+    "mode": "baseline",
+    "requests": 400,
+    "errors": 0,
+    "latency_ms": {
+      "p50": 8.794,
+      "p95": 11.695,
+      "p99": 20.146,
+      "mean": 9.422
+    },
+    "tier_stop_pct": {
+      "T2": 100.0
+    },
+    "decisions": {
+      "approve": 400
+    }
+  },
+  "optimized": {
+    "mode": "optimized",
+    "requests": 400,
+    "errors": 0,
+    "latency_ms": {
+      "p50": 4.928,
+      "p95": 10.015,
+      "p99": 18.718,
+      "mean": 5.913
+    },
+    "tier_stop_pct": {
+      "T1": 86.75,
+      "T2": 11.5,
+      "T0": 1.75
+    },
+    "decisions": {
+      "approve": 400
+    }
+  },
+  "notes": "Fraud capture @ fixed FPR computed offline in scripts/benchmark.py on held-out scores"
+}

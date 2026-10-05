@@ -38,17 +38,61 @@
   },
   "notes": "Fraud capture @ fixed FPR computed offline in scripts/benchmark.py on held-out scores",
   "offline_eval": {
-    "fraud_capture_at_5pct_fpr": {
-      "baseline": 0.2,
-      "optimized": 0.1
+    "n_samples": 1200,
+    "fraud_rate_holdout": 0.15,
+    "thresholds": {
+      "approve_threshold": 0.15,
+      "decline_threshold": 0.6015,
+      "cascade_safe_upper": 0.06,
+      "cascade_fraud_lower": 0.6815
     },
-    "simulated_latency_ms_mean": {
-      "baseline": 31.98,
-      "optimized": 8.284
+    "fraud_capture_at_5pct_fpr": {
+      "baseline": 0.2667,
+      "optimized": 0.4056
+    },
+    "operational_flagging": {
+      "baseline": {
+        "tp": 111,
+        "fp": 201,
+        "fn": 69,
+        "tn": 819,
+        "precision": 0.3558,
+        "recall_fraud_capture": 0.6167,
+        "fpr": 0.1971,
+        "flag_rate": 0.26
+      },
+      "optimized": {
+        "tp": 114,
+        "fp": 214,
+        "fn": 66,
+        "tn": 806,
+        "precision": 0.3476,
+        "recall_fraud_capture": 0.6333,
+        "fpr": 0.2098,
+        "flag_rate": 0.2733
+      }
+    },
+    "decision_mix_pct": {
+      "baseline": {
+        "approve": 74.0,
+        "review": 20.58,
+        "decline": 5.42
+      },
+      "optimized": {
+        "approve": 72.67,
+        "decline": 19.58,
+        "review": 7.75
+      }
+    },
+    "latency_ms_mean": {
+      "baseline": 32.152,
+      "optimized": 23.79,
+      "savings_pct": 26.01
     },
     "optimized_tier_stop_pct": {
-      "T1": 98.0,
-      "T0": 2.0
+      "T2": 71.42,
+      "T0": 19.58,
+      "T1": 9.0
     }
   }
 }
