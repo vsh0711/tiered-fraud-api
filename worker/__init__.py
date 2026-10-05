@@ -1,0 +1,1 @@
+"""Background Redis worker."""

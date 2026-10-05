@@ -1,8 +1,88 @@
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fraud
+      POSTGRES_PASSWORD: fraud
+      POSTGRES_DB: fraud
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fraud -d fraud"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   api:
     build: .
     ports:
       - "8742:8742"
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8742
+    environment:
+      FRAUD_DATABASE_URL: postgresql+asyncpg://fraud:fraud@db:5432/fraud
+      FRAUD_REDIS_URL: redis://redis:6379/0
+      FRAUD_JWT_SECRET: portfolio-demo-secret-change-me
+      FRAUD_BOOTSTRAP_ADMIN: "false"
+      FRAUD_ENVIRONMENT: development
+      FRAUD_FRONTEND_BASE_URL: http://127.0.0.1:3000
+      FRAUD_DEMO_API_KEY: tf_demo_key_change_me
+      FRAUD_CORS_ORIGINS: '["http://localhost:3000","http://127.0.0.1:3000","http://web:3000"]'
+      FRAUD_MODELS_DIR: data/models
     volumes:
       - ./data/models:/app/data/models
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head &&
+             if [ ! -f data/models/tier1.joblib ]; then python scripts/train_models.py; fi &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8742"
+
+  worker:
+    build: .
+    environment:
+      FRAUD_DATABASE_URL: postgresql+asyncpg://fraud:fraud@db:5432/fraud
+      FRAUD_REDIS_URL: redis://redis:6379/0
+      FRAUD_MODELS_DIR: data/models
+      FRAUD_DEMO_API_KEY: tf_demo_key_change_me
+      FRAUD_BOOTSTRAP_ADMIN: "false"
+      FRAUD_JWT_SECRET: portfolio-demo-secret-change-me
+    volumes:
+      - ./data/models:/app/data/models
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+    command: python -m worker.main
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE: http://127.0.0.1:8742
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE: http://127.0.0.1:8742
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

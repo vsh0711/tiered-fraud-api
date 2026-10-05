@@ -1,92 +1,103 @@
-# Tiered Fraud Scoring API
+# Tiered Fraud Scoring Platform
 
-Enterprise-style **FinTech fraud scoring** service: calibrated ML tiers (T0 rules → T1 fast → T2 full) plus an **operations-research router** that picks depth under a latency budget and **cascades** when scores are clearly safe or fraudulent.
+Production-style **FinTech fraud scoring** portfolio project: calibrated ML tiers (T0 rules → T1 fast → T2 full), an **operations-research router** under a latency budget, Postgres persistence, Redis async jobs, JWT/API-key auth, and a dark **Ops Console** dashboard.
 
-Built for portfolio demos comparing **baseline** (always run the full stack) vs **optimized** (OR + cascade).
+## Stack
 
-## Prerequisites
+| Layer | Tech |
+|--------|------|
+| API | FastAPI, Pydantic v2, Prometheus metrics |
+| ML / OR | LightGBM, scikit-learn, cascade + knapsack router |
+| DB | PostgreSQL, SQLAlchemy 2 (async), Alembic |
+| Cache / jobs | Redis worker (`batch_score`, `drift_scan`) |
+| Auth | API keys (`X-API-Key`) + JWT dashboard login |
+| Frontend | Next.js + TypeScript + Tailwind + Recharts |
+| Ops | Docker Compose, GitHub Actions CI, `/ready` + `/live` |
 
-- Python 3.11+
-- [uv](https://docs.astral.sh/uv/) or `pip`
-
-## Quick start (local)
-
-**First time in Cursor on your Mac?** See Project Context `docs/local-ide-setup.md` (venv, interpreter, Run/Debug configs).
-
-```bash
-cd /workspace
-uv sync                    # or: pip install -e .
-python scripts/train_models.py
-uvicorn app.main:app --host 127.0.0.1 --port 8742
-```
-
-Health check:
+## Quick start (Docker — recommended)
 
 ```bash
-curl -s http://127.0.0.1:8742/health | jq
-```
+# ensure models exist (also auto-trained in compose)
+export PATH="$HOME/.local/bin:$PATH"
+uv sync --extra dev
+uv run python scripts/train_models.py
 
-Score a transaction (optimized mode default):
-
-```bash
-curl -s -X POST http://127.0.0.1:8742/score \
-  -H 'Content-Type: application/json' \
-  -H 'X-Routing-Mode: optimized' \
-  -d '{
-    "request_id": "demo-1",
-    "amount": 420.50,
-    "merchant_category": "electronics",
-    "country": "US",
-    "device_risk_score": 0.15,
-    "velocity_1h": 1,
-    "velocity_24h": 3
-  }' | jq
-```
-
-Baseline (always T0→T1→T2):
-
-```bash
-curl -s -X POST http://127.0.0.1:8742/score \
-  -H 'Content-Type: application/json' \
-  -H 'X-Routing-Mode: baseline' \
-  -d '{ ... same body ... }' | jq
-```
-
-## Benchmarks
-
-With the API running:
-
-```bash
-python scripts/load_test.py      # HTTP load test → artifacts/benchmark_results.json
-python scripts/benchmark.py      # offline fraud capture @ 5% FPR (merges into same JSON)
-pytest tests/
-```
-
-Metrics endpoint: `GET /metrics` (Prometheus) or `Accept: application/json`.
-
-## Docker (optional)
-
-```bash
 docker compose up --build
+```
+
+- API: http://127.0.0.1:8742/docs  
+- Web: http://127.0.0.1:3000 → **Create account**, then sign in  
+- Forgot password emails use SMTP (`FRAUD_SMTP_*`); in local `development` without SMTP the reset link is logged by the API  
+- Service API key (scripts): `tf_demo_key_change_me`
+
+Seed history (optional, with stack running):
+
+```bash
+docker compose exec api python scripts/seed_demo.py
+```
+
+## Local (uv + Compose infra)
+
+```bash
+cp .env.example .env
+docker compose up -d db redis
+export PATH="$HOME/.local/bin:$PATH"
+uv sync --extra dev
+uv run alembic upgrade head
+uv run python scripts/train_models.py
+uv run uvicorn app.main:app --host 127.0.0.1 --port 8742 --reload
+# other terminal
+uv run python -m worker.main
+# frontend
+cd web && npm install && npm run dev
+```
+
+## API examples
+
+```bash
+curl -s http://127.0.0.1:8742/v1/health | jq
+
+curl -s -X POST http://127.0.0.1:8742/v1/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"vish","email":"you@example.com","password":"your-secure-password"}' | jq
+
+curl -s -X POST http://127.0.0.1:8742/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"you@example.com","password":"your-secure-password"}' | jq
+
+curl -s -X POST http://127.0.0.1:8742/v1/score/compare \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: tf_demo_key_change_me' \
+  -d '{
+    "request_id":"demo-1",
+    "amount":420.50,
+    "merchant_category":"electronics",
+    "country":"US",
+    "device_risk_score":0.15,
+    "velocity_1h":1,
+    "velocity_24h":3,
+    "deadline_ms":100
+  }' | jq
 ```
 
 ## Project layout
 
-| Path | Purpose |
-|------|---------|
-| `app/` | FastAPI app, config, metrics |
-| `or_router/` | OR planning + scoring pipeline |
-| `ml/` | Features, training, inference |
-| `sim/` | Synthetic transaction generator |
-| `scripts/` | Train + benchmark utilities |
-| `tests/` | OR router unit tests |
+```
+app/           FastAPI app (api/v1, core, db, services)
+or_router/     OR planning + cascade pipeline
+ml/            Features, training, inference
+sim/           Synthetic transactions + drift
+worker/        Redis job consumer
+web/           Next.js ops console
+alembic/       DB migrations
+scripts/       Train, seed, benchmarks
+tests/         Unit + smoke tests
+```
 
 ## Routing modes
 
-- **`X-Routing-Mode: baseline`** — sequential full tier stack (no early exit).
-- **`X-Routing-Mode: optimized`** — latency-budget knapsack + adaptive cascade.
-
-Storyline and architecture notes live in the Project store under `docs/portfolio-story.md` and `docs/architecture.md`.
+- **`baseline`** — always T0→T1→T2  
+- **`optimized`** — latency-budget plan + adaptive cascade early exit  
 
 ## License
 
