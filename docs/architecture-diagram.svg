@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620" role="img" aria-labelledby="title desc">
+  <title id="title">Tiered Fraud Scoring Platform architecture</title>
+  <desc id="desc">Clients talk to Next.js web and FastAPI; API uses OR router tiers, Postgres, and Redis; worker consumes Redis jobs.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#94a3b8"/>
+    </marker>
+    <style>
+      .label { font: 600 13px ui-sans-serif, system-ui, sans-serif; fill: #e2e8f0; }
+      .sub { font: 500 11px ui-sans-serif, system-ui, sans-serif; fill: #94a3b8; }
+      .box { fill: #111827; stroke: #334155; stroke-width: 1.5; rx: 10; }
+      .boxAccent { fill: #0b1220; stroke: #38bdf8; stroke-width: 1.5; rx: 10; }
+      .boxData { fill: #0b1220; stroke: #34d399; stroke-width: 1.5; rx: 10; }
+      .group { fill: #020617; stroke: #1e293b; stroke-width: 1; rx: 14; }
+      .groupTitle { font: 700 12px ui-sans-serif, system-ui, sans-serif; fill: #64748b; letter-spacing: 0.04em; }
+      .line { stroke: #94a3b8; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="960" height="620" fill="url(#bg)"/>
+  <text x="32" y="40" class="label" style="font-size:20px">Tiered Fraud Scoring Platform</text>
+  <text x="32" y="62" class="sub">Latency-budget routing · Postgres audit trail · Redis jobs · Ops Console</text>
+
+  <rect class="group" x="24" y="90" width="200" height="200"/>
+  <text class="groupTitle" x="40" y="114">CLIENTS</text>
+  <rect class="box" x="44" y="130" width="160" height="54"/>
+  <text class="label" x="58" y="152">Ops Console</text>
+  <text class="sub" x="58" y="170">Next.js</text>
+  <rect class="box" x="44" y="200" width="160" height="54"/>
+  <text class="label" x="58" y="222">API clients</text>
+  <text class="sub" x="58" y="240">curl / scripts</text>
+
+  <rect class="group" x="260" y="90" width="220" height="200"/>
+  <text class="groupTitle" x="276" y="114">PUBLIC EDGE</text>
+  <rect class="boxAccent" x="280" y="130" width="180" height="54"/>
+  <text class="label" x="294" y="152">web</text>
+  <text class="sub" x="294" y="170">Railway public</text>
+  <rect class="boxAccent" x="280" y="200" width="180" height="54"/>
+  <text class="label" x="294" y="222">api (FastAPI)</text>
+  <text class="sub" x="294" y="240">/v1 + migrations</text>
+
+  <rect class="group" x="520" y="90" width="416" height="200"/>
+  <text class="groupTitle" x="536" y="114">SCORING CORE</text>
+  <rect class="boxAccent" x="540" y="130" width="120" height="54"/>
+  <text class="label" x="554" y="152">OR router</text>
+  <text class="sub" x="554" y="170">plan + cascade</text>
+  <rect class="box" x="680" y="130" width="100" height="54"/>
+  <text class="label" x="700" y="160">T0</text>
+  <rect class="box" x="800" y="130" width="100" height="54"/>
+  <text class="label" x="820" y="160">T1</text>
+  <rect class="box" x="680" y="210" width="220" height="54"/>
+  <text class="label" x="760" y="242">T2 full ML</text>
+
+  <rect class="group" x="260" y="330" width="220" height="200"/>
+  <text class="groupTitle" x="276" y="354">DATA</text>
+  <rect class="boxData" x="280" y="370" width="180" height="54"/>
+  <text class="label" x="294" y="392">PostgreSQL</text>
+  <text class="sub" x="294" y="410">score_events, users, jobs</text>
+  <rect class="boxData" x="280" y="440" width="180" height="54"/>
+  <text class="label" x="294" y="462">Redis</text>
+  <text class="sub" x="294" y="480">queue + rate limit</text>
+
+  <rect class="group" x="520" y="330" width="220" height="200"/>
+  <text class="groupTitle" x="536" y="354">ASYNC</text>
+  <rect class="boxAccent" x="540" y="400" width="180" height="70"/>
+  <text class="label" x="554" y="430">worker</text>
+  <text class="sub" x="554" y="448">batch_score / drift_scan</text>
+
+  <path class="line" d="M204,157 H280"/>
+  <path class="line" d="M204,227 H280"/>
+  <path class="line" d="M460,227 H540"/>
+  <path class="line" d="M660,157 H680"/>
+  <path class="line" d="M780,157 H800"/>
+  <path class="line" d="M750,184 V210"/>
+  <path class="line" d="M370,254 V370"/>
+  <path class="line" d="M370,254 V440"/>
+  <path class="line" d="M460,467 H540"/>
+  <path class="line" d="M630,470 H720"/>
+  <path class="line" d="M720,470 V254"/>
+
+  <text class="sub" x="32" y="580">See docs/architecture.md for request path, auth, and Render topology.</text>
+</svg>

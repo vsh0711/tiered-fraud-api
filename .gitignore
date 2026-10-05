@@ -3,8 +3,11 @@ __pycache__/
 .venv/
 venv/
 .env
-data/models/*.joblib
-!data/models/.gitkeep
+# Model artifacts are committed for Render free builds (avoid train-on-build OOM).
+# Uncomment to keep local-only models:
+# data/models/*.joblib
+# !data/models/.gitkeep
+
 artifacts/*
 !artifacts/benchmark_results.json
 !artifacts/capture_report.json

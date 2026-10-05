@@ -132,6 +132,26 @@ curl -s -X POST http://127.0.0.1:8742/v1/score/compare \
 
 
 
+## Live deploy
+
+Deployed on **Render** (api + web + managed Postgres + Redis Key Value). Blueprint: [`render.yaml`](render.yaml).
+
+| Surface | URL |
+| ------- | --- |
+| Ops Console | https://tiered-fraud-web.onrender.com |
+| API health | https://tiered-fraud-api.onrender.com/v1/health |
+| OpenAPI | https://tiered-fraud-api.onrender.com/docs |
+
+Setup steps: [docs/deploy-render.md](docs/deploy-render.md)
+
+Notes: free web services may cold-start (~1 min after idle). Password reset without SMTP logs the link in the **api** service logs. Background worker is optional (paid Starter) for Redis jobs.
+
+## Docs
+
+- [Architecture](docs/architecture.md) ([diagram](docs/architecture-diagram.svg))
+- [Portfolio story](docs/portfolio-story.md)
+- [Render deploy](docs/deploy-render.md)
+
 ## Project layout
 
 ```
@@ -141,19 +161,16 @@ ml/            Features, training, inference
 sim/           Synthetic transactions + drift
 worker/        Redis job consumer
 web/           Next.js ops console
+docs/          Architecture, portfolio story, deploy guide
 alembic/       DB migrations
-scripts/       Train, seed, benchmarks
+scripts/       Train, seed, benchmarks, entrypoint
 tests/         Unit + smoke tests
 ```
-
-
 
 ## Routing modes
 
 - `baseline` — always T0→T1→T2  
 - `optimized` — latency-budget plan + adaptive cascade early exit
-
-
 
 ## License
 

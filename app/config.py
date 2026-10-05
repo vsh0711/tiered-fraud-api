@@ -1,8 +1,19 @@
+from __future__ import annotations
+
+import os
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _normalize_database_url(url: str) -> str:
+    if url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://") :]
+    if url.startswith("postgresql://") and "+asyncpg" not in url:
+        url = "postgresql+asyncpg://" + url[len("postgresql://") :]
+    return url
 
 
 class Settings(BaseSettings):
@@ -19,7 +30,6 @@ class Settings(BaseSettings):
     jwt_secret: str = "change-me-in-production-use-long-random-string"
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60 * 12
-    # Optional one-time bootstrap only when FRAUD_BOOTSTRAP_ADMIN=true
     bootstrap_admin: bool = False
     admin_username: str = "admin"
     admin_password: str = ""
@@ -49,13 +59,20 @@ class Settings(BaseSettings):
     fraud_value: float = 100.0
     latency_penalty_per_ms: float = 0.15
     review_cost: float = 12.0
-    # Tuned for stronger synthetic fraud signal + calibrated models
     approve_threshold: float = 0.22
     decline_threshold: float = 0.55
     cascade_safe_upper: float = 0.08
     cascade_fraud_lower: float = 0.70
     auto_apply_trained_thresholds: bool = True
     chance_constraint_max_miss_rate: float = 0.02
+
+    @model_validator(mode="after")
+    def normalize_runtime_urls(self) -> Settings:
+        db = os.getenv("FRAUD_DATABASE_URL") or os.getenv("DATABASE_URL") or self.database_url
+        redis = os.getenv("FRAUD_REDIS_URL") or os.getenv("REDIS_URL") or self.redis_url
+        self.database_url = _normalize_database_url(db)
+        self.redis_url = redis
+        return self
 
 
 @lru_cache

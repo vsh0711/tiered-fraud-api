@@ -1,0 +1,65 @@
+# Render Blueprint — free-tier friendly portfolio deploy
+# Dashboard: New → Blueprint → connect this repo
+# https://dashboard.render.com/blueprints
+
+services:
+  - type: web
+    name: tiered-fraud-api
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /v1/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tiered-fraud-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: tiered-fraud-redis
+          property: connectionString
+      - key: FRAUD_JWT_SECRET
+        generateValue: true
+      - key: FRAUD_ENVIRONMENT
+        value: production
+      - key: FRAUD_BOOTSTRAP_ADMIN
+        value: "false"
+      - key: FRAUD_DEMO_API_KEY
+        value: tf_demo_key_change_me
+      - key: FRAUD_FRONTEND_BASE_URL
+        value: https://tiered-fraud-web.onrender.com
+      - key: FRAUD_CORS_ORIGINS
+        value: '["https://tiered-fraud-web.onrender.com"]'
+
+  - type: web
+    name: tiered-fraud-web
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./web/Dockerfile
+    dockerContext: ./web
+    envVars:
+      # Injected as Docker build-arg + runtime env (needed for Next.js client bundle)
+      - key: NEXT_PUBLIC_API_BASE
+        value: https://tiered-fraud-api.onrender.com
+
+  # Background workers are not available on the Free plan.
+  # After deploy, optionally add a Starter worker with:
+  #   dockerCommand: python -m worker.main
+  #   same Dockerfile + DATABASE_URL / REDIS_URL as the API.
+
+  - type: keyvalue
+    name: tiered-fraud-redis
+    plan: free
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
+
+databases:
+  - name: tiered-fraud-db
+    plan: free
+    region: oregon
+    postgresMajorVersion: "16"

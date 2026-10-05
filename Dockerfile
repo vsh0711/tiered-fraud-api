@@ -11,7 +11,10 @@ COPY worker ./worker
 COPY scripts ./scripts
 COPY alembic ./alembic
 COPY alembic.ini ./
-RUN pip install --no-cache-dir -e ".[dev]"
 COPY data/models ./data/models
+RUN pip install --no-cache-dir -e .
+# Bake models into the image when not already present
+RUN if [ ! -f data/models/tier1.joblib ]; then PYTHONPATH=. python scripts/train_models.py; fi
+RUN chmod +x scripts/entrypoint.sh
 EXPOSE 8742
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8742"]
+CMD ["./scripts/entrypoint.sh"]

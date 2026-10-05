@@ -10,17 +10,15 @@ logger = logging.getLogger("fraud_api.email")
 
 
 def send_email(*, settings: Settings, to_email: str, subject: str, text_body: str) -> None:
-    """Send email via SMTP. In development without SMTP, log the body instead."""
+    """Send email via SMTP. If SMTP is unset, log the message (portfolio/live fallback)."""
     if not settings.smtp_host:
-        if settings.environment.lower() in {"development", "dev", "local"}:
-            logger.warning(
-                '{"event":"email_dev_fallback","to":"%s","subject":"%s","body":%s}',
-                to_email,
-                subject,
-                text_body.replace("\n", "\\n"),
-            )
-            return
-        raise RuntimeError("SMTP is not configured (set FRAUD_SMTP_HOST and related vars)")
+        logger.warning(
+            '{"event":"email_fallback_log","to":"%s","subject":"%s","body":%s}',
+            to_email,
+            subject,
+            text_body.replace("\n", "\\n"),
+        )
+        return
 
     msg = EmailMessage()
     msg["Subject"] = subject
