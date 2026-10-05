@@ -26,7 +26,9 @@ export default function HistoryPage() {
   }
 
   useEffect(() => {
-    load();
+    void load();
+    // reload when filters change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [decision, mode]);
 
   return (
